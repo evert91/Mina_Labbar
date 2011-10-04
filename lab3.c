@@ -128,6 +128,9 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (chdir(dir->d_name) >= 0){
                         getcwd(currentPath, sizeof(currentPath));
                         search(c, searchString, currentPath);
+
+                        if (chdir(path) < 0)
+                            printf("chdir failed\n");
                 }
             }
         }
