@@ -96,6 +96,7 @@ void * inspect(cell * pos, head_tail * h_t){
     DIR * d;
     struct dirent *dir;
 	struct stat	buf;
+	char* newPath;
 
 
     head_tail h_t;
@@ -108,11 +109,23 @@ void * inspect(cell * pos, head_tail * h_t){
     if (chdir("test") < 0)
         printf("chdir failed\n");
 */
-    d = opendir(path);
+    if ((d = opendir(path)) == NULL){
+        printf("Kan inte öppna sökvägen");
+        return 0;
+    }
+
 
     while ((dir = readdir(d)) != NULL){
 
         lstat(dir->d_name, &buf);
+
+        if (S_ISDIR(buf.st_mode)){
+            if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
+              //  newPath = strncat(path, dir->d_name, strlen(dir->d_name));
+                printf("->%s\n", dir->d_name);
+                //search(c, searchString, chdir("test"));
+            }
+        }
 
 
         switch (c){
@@ -123,7 +136,7 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (S_ISDIR(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
                         if (!strcmp (dir->d_name, searchString)){
-                            printf("%s/%s\n",path, dir->d_name);
+                            printf("%s%s\n",path, dir->d_name);
                         }
                     }
                 }
@@ -132,7 +145,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'f':
                 if (S_ISREG(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s/%s\n",path, dir->d_name);
+                        printf("%s%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -140,7 +153,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'l':
                 if (S_ISLNK(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s/%s\n",path, dir->d_name);
+                        printf("%s%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -149,7 +162,7 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (S_ISDIR(buf.st_mode) || S_ISREG(buf.st_mode) || S_ISLNK(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
                         if (!strcmp (dir->d_name, searchString)){
-                            printf("%s%s\n",path, dir->d_name);
+                           printf("%s%s\n",path, dir->d_name);
                         }
                     }
                 }
@@ -162,6 +175,7 @@ void * inspect(cell * pos, head_tail * h_t){
     }
 
     closedir(d);
+    return 1;
  }
 
 int getFileIndex(int argc, char **argv){
@@ -176,6 +190,22 @@ int getFileIndex(int argc, char **argv){
     }
 }
 
+
+int getPathStartIndex(int argc, char **argv){
+
+    int i = 0;
+    int pathStartIndex = 0;
+
+    for (i = optind; i < argc; i++){
+
+        if (i <= (argc -2)){
+            pathStartIndex = i;
+        }
+    }
+    return pathStartIndex;
+}
+
+
 int main (int argc, char **argv) {
 
     int c;
@@ -183,12 +213,11 @@ int main (int argc, char **argv) {
     char * searchString;
     int flagExist = 0;
     char * path;
+    int pathIndex;
 
     opterr = 0;
     searchString = strdup(argv[getFileIndex(argc, argv)]);
-//    printf("->%s\n", argv[optind]);
 
-    path = argv[optind];
 /*
    char currentPath[4096];
 
@@ -203,6 +232,9 @@ int main (int argc, char **argv) {
 
 
     while ((c = getopt (argc, argv, "t:")) != -1){
+
+        pathIndex = getPathStartIndex(argc, argv);
+        path = argv[pathIndex];
 
         if (c == 't'){
 
@@ -234,7 +266,7 @@ int main (int argc, char **argv) {
     }
 
     if (!flagExist){
-        //printf("Du har inte angett någon flagga\n");
+        path = argv[1];
         search('a', searchString, path);
     }
 
