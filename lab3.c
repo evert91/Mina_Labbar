@@ -103,13 +103,17 @@ void * inspect(cell * pos, head_tail * h_t){
     char * str;
     h_t = create_list();
 
+    char currentPath[4096];
+
+    if (chdir(path) < 0)
+        printf("chdir failed\n");
 /*
     //printf("-->%s\n", currentPath); /home/evert/etc/example/lab3/test/
 
     if (chdir("test") < 0)
         printf("chdir failed\n");
 */
-    if ((d = opendir(path)) == NULL){
+    if ((d = opendir(".")) == NULL){
         printf("Kan inte öppna sökvägen");
         return 0;
     }
@@ -119,6 +123,7 @@ void * inspect(cell * pos, head_tail * h_t){
 
         lstat(dir->d_name, &buf);
 
+/*
         if (S_ISDIR(buf.st_mode)){
             if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
               //  newPath = strncat(path, dir->d_name, strlen(dir->d_name));
@@ -126,7 +131,7 @@ void * inspect(cell * pos, head_tail * h_t){
                 //search(c, searchString, chdir("test"));
             }
         }
-
+*/
 
         switch (c){
 
@@ -135,9 +140,9 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'd':
                 if (S_ISDIR(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
-                        if (!strcmp (dir->d_name, searchString)){
+                        //if (!strcmp (dir->d_name, searchString)){
                             printf("%s%s\n",path, dir->d_name);
-                        }
+                        //}
                     }
                 }
                 break;
