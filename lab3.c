@@ -97,13 +97,12 @@ void * inspect(cell * pos, head_tail * h_t){
     struct dirent *dir;
 	struct stat	buf;
 	char* newPath;
+    char currentPath[4096];
 
 
     head_tail h_t;
     char * str;
     h_t = create_list();
-
-    char currentPath[4096];
 
     if (chdir(path) < 0)
         printf("chdir failed\n");
@@ -123,15 +122,16 @@ void * inspect(cell * pos, head_tail * h_t){
 
         lstat(dir->d_name, &buf);
 
-/*
+
         if (S_ISDIR(buf.st_mode)){
             if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
-              //  newPath = strncat(path, dir->d_name, strlen(dir->d_name));
-                printf("->%s\n", dir->d_name);
-                //search(c, searchString, chdir("test"));
+                if (chdir(dir->d_name) >= 0){
+                        getcwd(currentPath, sizeof(currentPath));
+                        search(c, searchString, currentPath);
+                }
             }
         }
-*/
+
 
         switch (c){
 
@@ -140,9 +140,9 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'd':
                 if (S_ISDIR(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
-                        //if (!strcmp (dir->d_name, searchString)){
-                            printf("%s%s\n",path, dir->d_name);
-                        //}
+                        if (!strcmp (dir->d_name, searchString)){
+                            printf("%s/%s\n",path, dir->d_name);
+                        }
                     }
                 }
                 break;
@@ -150,7 +150,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'f':
                 if (S_ISREG(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s%s\n",path, dir->d_name);
+                        printf("%s/%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -158,7 +158,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'l':
                 if (S_ISLNK(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s%s\n",path, dir->d_name);
+                        printf("%s/%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -167,7 +167,7 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (S_ISDIR(buf.st_mode) || S_ISREG(buf.st_mode) || S_ISLNK(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
                         if (!strcmp (dir->d_name, searchString)){
-                           printf("%s%s\n",path, dir->d_name);
+                           printf("%s/%s\n",path, dir->d_name);
                         }
                     }
                 }
