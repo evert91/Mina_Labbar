@@ -91,30 +91,28 @@ void * inspect(cell * pos, head_tail * h_t){
     printf("%s\n", str);
 */
 
- int search(char c, char * searchString){
+ int search(char c, char * searchString, char * path){
 
     DIR * d;
     struct dirent *dir;
 	struct stat	buf;
-    char currentPath[4096];
 
 
     head_tail h_t;
     char * str;
     h_t = create_list();
 
-
-    if (getcwd(currentPath, sizeof(currentPath)) == NULL)
-        printf("getcwd failed\n");
+/*
+    //printf("-->%s\n", currentPath); /home/evert/etc/example/lab3/test/
 
     if (chdir("test") < 0)
         printf("chdir failed\n");
-
-    d = opendir(".");
+*/
+    d = opendir(path);
 
     while ((dir = readdir(d)) != NULL){
 
-        stat(dir->d_name, &buf);
+        lstat(dir->d_name, &buf);
 
 
         switch (c){
@@ -125,7 +123,7 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (S_ISDIR(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
                         if (!strcmp (dir->d_name, searchString)){
-                            printf("%s/%s\n",currentPath, dir->d_name);
+                            printf("%s/%s\n",path, dir->d_name);
                         }
                     }
                 }
@@ -134,7 +132,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'f':
                 if (S_ISREG(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s/%s\n",currentPath, dir->d_name);
+                        printf("%s/%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -142,7 +140,7 @@ void * inspect(cell * pos, head_tail * h_t){
             case 'l':
                 if (S_ISLNK(buf.st_mode)){
                     if (!strcmp (dir->d_name, searchString)){
-                        printf("%s/%s\n",currentPath, dir->d_name);
+                        printf("%s/%s\n",path, dir->d_name);
                     }
                 }
                 break;
@@ -151,14 +149,14 @@ void * inspect(cell * pos, head_tail * h_t){
                 if (S_ISDIR(buf.st_mode) || S_ISREG(buf.st_mode) || S_ISLNK(buf.st_mode)){
                     if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")){
                         if (!strcmp (dir->d_name, searchString)){
-                            printf("%s/%s\n",currentPath, dir->d_name);
+                            printf("%s%s\n",path, dir->d_name);
                         }
                     }
                 }
                 break;
 
             default:
-                printf("Case character doesn't exist");
+                printf("Flag argument doesn't exist");
                 break;
         }
     }
@@ -178,22 +176,38 @@ int getFileIndex(int argc, char **argv){
     }
 }
 
- int main (int argc, char **argv) {
+int main (int argc, char **argv) {
 
-   int c;
-   int fileIndex;
-   char * searchString;
-   int flagExist = 0;
+    int c;
+    int fileIndex;
+    char * searchString;
+    int flagExist = 0;
+    char * path;
 
-   opterr = 0;
-   searchString = strdup(argv[getFileIndex(argc, argv)]);
+    opterr = 0;
+    searchString = strdup(argv[getFileIndex(argc, argv)]);
+//    printf("->%s\n", argv[optind]);
+
+    path = argv[optind];
+/*
+   char currentPath[4096];
+
+    if (getcwd(currentPath, sizeof(currentPath)) == NULL){
+        printf("fail to do getcwd!");
+    }
+
+
+    if (chdir("test") < 0)
+        printf("chdir failed\n");
+*/
+
 
     while ((c = getopt (argc, argv, "t:")) != -1){
 
         if (c == 't'){
 
             flagExist = 1;
-            search(optarg[0], searchString);
+            search(optarg[0], searchString, path);
 /*
             switch (optarg[0]){
                     case 'd':
@@ -220,8 +234,8 @@ int getFileIndex(int argc, char **argv){
     }
 
     if (!flagExist){
-        printf("Du har inte angett någon flagga\n");
-        search('a', searchString);
+        //printf("Du har inte angett någon flagga\n");
+        search('a', searchString, path);
     }
 
 /*
@@ -236,6 +250,5 @@ int getFileIndex(int argc, char **argv){
         }
     }
 */
-    return 1;
     return 0;
 }
