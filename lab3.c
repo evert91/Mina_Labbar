@@ -75,6 +75,9 @@
                             fprintf(stderr, "Chdir failed");
                         }
                 }
+                else{
+                    fprintf(stderr, "cannot read dir %s/%s Permission denied\n",path, dir->d_name);
+                }
             }
         }
 
