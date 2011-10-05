@@ -1,3 +1,13 @@
+/*
+ * Namn: Daniel Evertsson
+ * Lab3 Systemnärprogrammering 2011
+ *
+ * Programmet tar in en eller flera sökvägar och ett fil namn och lista alla
+ * sökvägar till filen med matchande namn. Eventuellt kan en flagga -t med
+ * tillhörade argument anges för att bergänsa sökningen till vissa fil typer
+ * -t d där d enbart är kataloger.
+ */
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +27,7 @@
             Namnet på filen man söker.
         path:
             en stäng som innehåller sökvägen till den mapp i vilken sökningen
-            ska börja.
-*/
+            ska börja. */
  int search(char c, char * searchString, char * path){
 
     DIR * d;
@@ -131,6 +140,7 @@ int getFileIndex(int argc, char **argv){
     return 0;
 }
 
+/* ./mfind [-t d|f|l] start1 [start2 ...] name */
 int main (int argc, char **argv) {
 
     int c;
