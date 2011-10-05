@@ -15,6 +15,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 
 /*  Funktionen söker efter en fil (mapp, vanlig fil respektive länk).
     Sökningen startar i den mapp som angivits som argument. Sökningen
@@ -66,7 +67,7 @@
                             fprintf(stderr, "Failed to do getcwd");
                         }
 
-                        if (search(c, searchString, currentPath) == NULL){
+                        if (search(c, searchString, currentPath) == 0){
                             fprintf(stderr, "Failed to do recursion");
                         }
 
